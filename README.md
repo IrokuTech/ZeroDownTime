@@ -8,6 +8,6 @@ Preparación del entorno de desarrollo, construcción de una aplicación web con
 
 ## Equipo
 
-- Yile Ma Ye
 - Andrey Carrera Mosquera
 - David Cuenca Guirado
+- Yile Ma Ye
