@@ -1,22 +1,43 @@
-# Go binaries
+
+# ==========================================
+# BINARIOS DE GO
+# ==========================================
+
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
 
-# Test binaries
-*.test
+# Binario compilado del proyecto
+/ZeroDownTime
 
-# Coverage
+# ==========================================
+# ARCHIVOS DE PRUEBAS
+# ==========================================
+
+*.test
 *.out
 
-# Environment files
+# ==========================================
+# VARIABLES DE ENTORNO
+# ==========================================
+
 .env
 .env.*
 
-# IDE / OS
+# ==========================================
+# EDITORES Y SISTEMA OPERATIVO
+# ==========================================
+
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
+
+# ==========================================
+# ARCHIVOS TEMPORALES
+# ==========================================
+
+*.log
+*.tmp

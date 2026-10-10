@@ -1,0 +1,22 @@
+
+# Control de versiones
+.git
+.gitignore
+
+# Documentación
+README.md
+
+# Binarios compilados localmente
+/ZeroDownTime
+
+# Configuración de editores
+.vscode/
+.idea/
+
+# Archivos temporales
+*.log
+*.tmp
+
+# Variables de entorno
+.env
+.env.*
