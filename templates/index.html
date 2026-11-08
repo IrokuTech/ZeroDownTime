@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="ZeroDownTime - Proyecto DevOps y Cloud Computing de la UOC">
-    <title>ZeroDownTime | Producto 1</title>
+    <title>ZeroDownTime | Producto 2</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 
@@ -19,9 +19,15 @@
                 <h2>Somos alumnos de la UOC</h2>
 
                 <p class="descripcion">
-                    Aplicación web desarrollada con Go y ejecutada
-                    mediante Docker<br>
-                    Producto 1. Preparación del entorno de desarrollo.
+                    Aplicación web desarrollada con Go, desplegada automáticamente
+                    con Jenkins en Kubernetes sobre AWS<br>
+                    Producto 2. Despliegue en entorno de producción.
+                </p>
+
+                <p class="descripcion">
+                    Servido por el pod <strong>{{.Pod}}</strong> ·
+                    Entorno <strong>{{.Entorno}}</strong> ·
+                    Versión <strong>{{.Version}}</strong>
                 </p>
 
                 <div class="imagen-proyecto">
@@ -34,6 +40,9 @@
                 <div class="tecnologias">
                     <span>Go</span>
                     <span>Docker</span>
+                    <span>Jenkins</span>
+                    <span>Kubernetes</span>
+                    <span>AWS</span>
                 </div>
             </div>
         </section>
