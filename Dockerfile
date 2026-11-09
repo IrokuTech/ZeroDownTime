@@ -22,6 +22,10 @@ FROM alpine:3.22
 
 WORKDIR /app
 
+# Zona horaria de los logs: hora de España (necesaria para el análisis del Producto 3)
+RUN apk add --no-cache tzdata
+ENV TZ=Europe/Madrid
+
 # Copiar el ejecutable generado en la primera etapa
 COPY --from=builder /app/servidor ./servidor
 
