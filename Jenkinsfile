@@ -98,9 +98,13 @@ pipeline {
                     kubectl create namespace "$NAMESPACE" \
                         --dry-run=client -o yaml | kubectl apply -f -
 
-                    # Aplicar el Deployment con la imagen y versión actuales.
+                    # Motivo del despliegue, visible en "kubectl rollout history".
+                    CAUSA="Jenkins build $BUILD_NUMBER - rama $BRANCH_NAME - commit $GIT_CORTO"
+
+                    # Aplicar el Deployment con la imagen, la versión y el motivo actuales.
                     sed -e "s|__IMAGEN__|$IMAGEN|" \
                         -e "s|__VERSION__|$VERSION|" \
+                        -e "s|__CAUSA__|$CAUSA|" \
                         k8s/deployment.yaml \
                         | kubectl apply -n "$NAMESPACE" -f -
 
@@ -131,16 +135,45 @@ pipeline {
                     IP_NODO=$(kubectl get nodes \
                         -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}')
 
-                    echo "Prueba de humo contra http://$IP_NODO:$NODE_PORT"
+                    URL="http://$IP_NODO:$NODE_PORT"
+                    echo "Prueba de humo contra $URL"
 
                     # Comprobar que la aplicación responde correctamente.
-                    curl -fsS "http://$IP_NODO:$NODE_PORT/health"
+                    curl -fsS "$URL/health"
                     echo
 
-                    # Comprobar la identificación de los pods.
-                    for i in 1 2 3 4 5 6; do
-                        curl -fsS "http://$IP_NODO:$NODE_PORT/pod"
+                    # Esperar a que todas las respuestas sean de la versión nueva.
+                    # Durante unos segundos los pods antiguos siguen atendiendo mientras se retiran.
+                    set +x
+                    antiguas=1
+                    for intento in $(seq 1 15); do
+                        antiguas=0
+                        for i in 1 2 3 4 5 6; do
+                            respuesta=$(curl -fsS "$URL/pod" || true)
+                            case "$respuesta" in
+                                *"versión: $VERSION"*) ;;
+                                *) antiguas=$((antiguas + 1)) ;;
+                            esac
+                        done
+                        if [ "$antiguas" -eq 0 ]; then
+                            echo "Intento $intento: todas las respuestas son de la versión $VERSION"
+                            break
+                        fi
+                        echo "Intento $intento: $antiguas de 6 respuestas aún de la versión anterior, reintentando..."
+                        sleep 2
                     done
+                    if [ "$antiguas" -ne 0 ]; then
+                        echo "ERROR: el Service sigue sirviendo una versión distinta de $VERSION"
+                        exit 1
+                    fi
+                    set -x
+
+                    # Mostrar el reparto entre los pods de la versión nueva.
+                    for i in 1 2 3 4 5 6; do
+                        curl -fsS "$URL/pod"
+                    done
+
+                    kubectl rollout history deployment/zerodowntime -n "$NAMESPACE"
                 '''
             }
         }

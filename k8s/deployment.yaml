@@ -1,11 +1,13 @@
 # Deployment de ZeroDownTime
-# __IMAGEN__ y __VERSION__ se sustituyen antes de aplicarlo (a mano o desde Jenkins).
+# __IMAGEN__, __VERSION__ y __CAUSA__ se sustituyen antes de aplicarlo (a mano o desde Jenkins).
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: zerodowntime
   labels:
     app: zerodowntime
+  annotations:
+    kubernetes.io/change-cause: "__CAUSA__"   # aparece en "kubectl rollout history"
 spec:
   replicas: 2                      # dos copias de la aplicación = alta disponibilidad
   revisionHistoryLimit: 5          # guarda versiones anteriores para poder volver atrás
