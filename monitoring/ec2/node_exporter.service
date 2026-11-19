@@ -1,0 +1,27 @@
+[Unit]
+Description=Prometheus Node Exporter
+Documentation=https://github.com/prometheus/node_exporter
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=node_exporter
+Group=node_exporter
+Type=simple
+# Solo escucha en loopback: Prometheus accede a traves de un tunel SSH,
+# por lo que no es necesario abrir el puerto 9100 en el Security Group.
+ExecStart=/usr/local/bin/node_exporter \
+  --web.listen-address=127.0.0.1:9100 \
+  --collector.systemd \
+  --collector.systemd.unit-include=(docker|jenkins|ssh|node_exporter)\.service
+Restart=on-failure
+RestartSec=5s
+
+# Endurecimiento basico del servicio
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
