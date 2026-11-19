@@ -1,0 +1,10 @@
+apiVersion: 1
+
+providers:
+  - name: ZeroDownTime
+    folder: ZeroDownTime
+    type: file
+    disableDeletion: false
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards

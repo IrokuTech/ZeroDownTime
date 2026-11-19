@@ -1,0 +1,64 @@
+# Reglas de alerta de la EC2 de ZeroDownTime.
+# Los valores de "for" son cortos a proposito para poder observar el estado
+# pending antes de firing durante las pruebas.
+
+groups:
+  - name: ec2-zerodowntime
+    rules:
+
+      - alert: InstanciaCaida
+        expr: up{job="node-ec2"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Node Exporter de {{ $labels.instance }} no responde"
+          description: "Prometheus no puede obtener metricas de la EC2 (servicio parado, EC2 apagada o tunel SSH caido)."
+
+      - alert: CPUAlta
+        expr: 100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[1m]))) > 80
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU por encima del 80 % en {{ $labels.instance }}"
+          description: "Uso de CPU: {{ $value | printf \"%.1f\" }} %"
+
+      - alert: MemoriaAlta
+        expr: 100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) > 85
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Memoria por encima del 85 % en {{ $labels.instance }}"
+          description: "Uso de memoria: {{ $value | printf \"%.1f\" }} %"
+
+      - alert: DiscoLleno
+        expr: 100 * (1 - node_filesystem_avail_bytes{mountpoint="/",fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay"}) > 80
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Disco raiz por encima del 80 % en {{ $labels.instance }}"
+          description: "Uso de disco en /: {{ $value | printf \"%.1f\" }} %"
+
+      - alert: CargaAlta
+        expr: node_load1 / count without (cpu, mode) (node_cpu_seconds_total{mode="idle"}) > 1.5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Carga del sistema elevada en {{ $labels.instance }}"
+          description: "load1 por nucleo: {{ $value | printf \"%.2f\" }}"
+
+  - name: app-zerodowntime
+    rules:
+
+      - alert: AplicacionCaida
+        expr: probe_success{job="app-health"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "/health no responde en {{ $labels.entorno }}"
+          description: "La comprobacion HTTP de {{ $labels.instance }} ha fallado."
