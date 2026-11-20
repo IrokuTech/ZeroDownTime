@@ -43,6 +43,26 @@ services:
     depends_on:
       - tunel-ec2
       - blackbox
+      - alertmanager
+
+  # Notificaciones a Discord. La URL del webhook es secreta: se lee del fichero
+  # alertmanager/.env.discord, excluido de git (ver alertmanager/env.discord.example).
+  alertmanager:
+    image: prom/alertmanager:v0.28.1
+    container_name: alertmanager
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+    environment:
+      TZ: Europe/Madrid
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - ./alertmanager/.env.discord:/etc/alertmanager/discord_webhook_url:ro
+      - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
+      - alertmanager-data:/alertmanager
 
   blackbox:
     image: prom/blackbox-exporter:v0.27.0
@@ -76,3 +96,4 @@ services:
 volumes:
   prometheus-data:
   grafana-data:
+  alertmanager-data:
