@@ -1,0 +1,34 @@
+# Alertmanager: agrupa las alertas de Prometheus y las notifica en un canal de Discord.
+# La URL del webhook es secreta y se lee de un fichero ignorado por git (.env.discord).
+
+route:
+  receiver: discord
+  group_by: [alertname, instance, entorno]
+  group_wait: 10s        # espera inicial para agrupar alertas relacionadas
+  group_interval: 1m     # minimo entre notificaciones del mismo grupo
+  repeat_interval: 1h    # recordatorio si la alerta sigue activa
+
+receivers:
+  - name: discord
+    discord_configs:
+      - webhook_url_file: /etc/alertmanager/discord_webhook_url
+        send_resolved: true
+        title: >-
+          {{ if eq .Status "firing" }}🔥 ALERTA{{ else }}✅ RESUELTA{{ end }}:
+          {{ .CommonLabels.alertname }} ({{ len .Alerts }})
+        message: |-
+          {{ range .Alerts }}**{{ .Annotations.summary }}**
+          {{ .Annotations.description }}
+          • Severidad: `{{ .Labels.severity }}`
+          • Inicio: {{ .StartsAt.Local.Format "02/01/2006 15:04:05" }}{{ if eq .Status "resolved" }}
+          • Fin: {{ .EndsAt.Local.Format "02/01/2006 15:04:05" }}{{ end }}
+          {{ end }}
+
+# Si la instancia esta caida no tiene sentido notificar el resto de alertas de esa
+# misma maquina: InstanciaCaida (critical) inhibe las de severidad warning.
+inhibit_rules:
+  - source_matchers:
+      - alertname = InstanciaCaida
+    target_matchers:
+      - severity = warning
+    equal: [instance]
