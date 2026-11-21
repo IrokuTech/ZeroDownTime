@@ -2,7 +2,7 @@
 
 Plataforma DevOps completa para una aplicación web en Go: contenerización con Docker, CI/CD con Jenkins, despliegue sin cortes en Kubernetes sobre AWS EC2, proxy inverso con Nginx y monitorización con Prometheus, Grafana y alertas en Discord.
 
-Proyecto grupal de la asignatura *DevOps y Cloud Computing*.
+Proyecto desarrollado en la asignatura *DevOps y Cloud Computing* (UOC).
 
 ## Arquitectura
 
@@ -194,8 +194,6 @@ docker compose up -d --build
 
 En la EC2, Node Exporter se instala como servicio con `monitoring/ec2/node_exporter.service`, y Nginx con `infra/nginx/zerodowntime.conf`.
 
-## Equipo
+## Autor
 
-- Andrey Carrera Mosquera
-- David Cuenca Guirado
-- Yile Ma Ye
+**Yile Ma Ye** · [GitHub](https://github.com/IrokuTech)
