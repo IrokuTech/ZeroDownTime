@@ -102,7 +102,6 @@ func infoHandler(w http.ResponseWriter, r *http.Request) {
 
 	responderJSON(w, map[string]string{
 		"nombre":     "ZeroDownTime",
-		"producto":   "Producto 2",
 		"tecnologia": "Go + Docker + Kubernetes",
 		"entorno":    entorno,
 		"version":    version,
@@ -132,7 +131,7 @@ func responderJSON(w http.ResponseWriter, datos map[string]string) {
 }
 
 // registrarPeticiones añade la cabecera X-Pod a todas las respuestas y deja
-// constancia de cada petición en el log (útil para el análisis de logs del Producto 3).
+// constancia de cada petición en el log (útil para el análisis de los logs).
 // Las comprobaciones de /health no se registran para no llenar el log con las sondas.
 func registrarPeticiones(siguiente http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
