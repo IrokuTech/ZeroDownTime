@@ -22,7 +22,7 @@ FROM alpine:3.22
 
 WORKDIR /app
 
-# Zona horaria de los logs: hora de España (necesaria para el análisis del Producto 3)
+# Zona horaria de los logs: hora de España (facilita el análisis de los logs)
 RUN apk add --no-cache tzdata
 ENV TZ=Europe/Madrid
 
